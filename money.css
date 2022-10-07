@@ -1,0 +1,21 @@
+tr{
+    border-bottom: 3px solid black;
+}
+table{
+    border: 1px solid black;
+}
+td, th{
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+td:nth-child(even) {
+    background-color: blanchedalmond;
+    } 
+th:nth-child(odd) {
+        background-color: blanchedalmond;
+        } 
+tr:hover{
+        background-color: aquamarine;
+    }
+
