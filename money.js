@@ -18,9 +18,17 @@ Step 4: Create a table instead of just adding the values. (done)
 Step 5: After the table is created we have the oa input for item cost(Done)
 step 6: When we hit the item cost value we check to see if we have the budget/limit(Done)
 Step 7: If we can purchase have a popup for a "Do you want to make this purchase". If yes than we subtract the value from the budget
-Step 8: We need to have the budget increase and decrease from bills and paychecks
+Step 8: We need to have the budget increase and decrease from bills and paychecks(idea 1: checking date and if its a friday then we get paid)
 
 */
+let date = new Date()
+let day = date.getDay()
+console.log(day)
+
+if(day == 0){
+    console.log(`It's Sunday!!`)
+}
+
 
 
 
@@ -32,27 +40,46 @@ document.getElementById('btn').addEventListener('click', function(){
     let otherIncomeValue = parseInt(document.getElementById('otherIncomes').value)
     let savingLimitValue = parseInt(document.getElementById('savingLimit').value)
     let valuesArray = [currentSavingsValue, currentPaycheckValue, currentBillsValue, otherExpensesValue, otherIncomeValue]
+    let budget = currentSavingsValue - savingLimitValue
     let amount = currentSavingsValue + (currentPaycheckValue * 4)
     let amountIncome = amount + otherIncomeValue
     let amountDecrease = amountIncome - (currentBillsValue + otherExpensesValue)
+    let isAllValuesEntered
+
+  
+    valuesArray.forEach((item) => {
+        if(isNaN(item) == true){
+            isAllValuesEntered = false;
+        } else{isAllValuesEntered = true}
+        
+    })
+
+
+if(isAllValuesEntered == true){
+    if(day == 0){
+        valuesArray[0] += currentPaycheckValue
+        document.getElementById('values').innerHTML += `<h2>Today was payday and you got paid ${currentPaycheckValue}$</h2>`
+    }
+    document.querySelector('#valuesError').remove()
+    document.getElementById('form').remove()
         document.getElementById('values').innerHTML += 
             `<table id='moneyTable'>
             <tr><th>Current Savings</th> <th>Current Paycheck</th> <th>Current Bills</th> 
             <th>Other Expenses</th> <th>Other Income</th> <th>Budget</th></tr>
             <tr>
 
-            <td>${valuesArray[0]}$</td>
+            <td id="currentSavings">${valuesArray[0]}$</td>
             <td>${valuesArray[1]}$</td>
             <td>${valuesArray[2]}$</td>
             <td>${valuesArray[3]}$</td>
             <td>${valuesArray[4]}$</td>
-            <td>${amount}%</td>
+            <td id="currentBudget">${budget}$</td>
 
             </tr>
             </table>
             
             <p> At the end of the month you will have made ${amount}$ and your bills will cost ${valuesArray[2]} and other expenses cost ${valuesArray[3]}
-            You had ${valuesArray[1]} saved up with other incomes ${valuesArray[4]}. This means you have ${amountDecrease}$ left</p>
+            You had ${valuesArray[0]} saved up with other incomes ${valuesArray[4]}. This means you have ${amountDecrease}$ left</p>
             
 
             <div>
@@ -61,14 +88,25 @@ document.getElementById('btn').addEventListener('click', function(){
                 <button id="btnItem">Click</button>
             </div>
             `
-        
+
+
         document.getElementById('btnItem').addEventListener('click', function(){
             let itemCostValue = parseInt(document.getElementById('itemCosts').value)
-            let budget = currentSavingsValue -= itemCostValue
-            if(budget>savingLimitValue ){
+            let budgetAfterPurchase = currentSavingsValue - itemCostValue
+            if(budgetAfterPurchase>savingLimitValue ){
                 console.log('You can Purchase')
-            } else {
+                currentSavingsValue -= itemCostValue
+                document.getElementById('currentSavings').textContent = currentSavingsValue
+                budget -= itemCostValue
+                document.getElementById('currentBudget').textContent = budget
+            } else if(isNaN(budget)){
+                console.log(`Enter in a budget`)
+            }
+            else {
                 console.log('You cant purchase')
             }
-       })
+    })
+} else{
+    
+}
 })
