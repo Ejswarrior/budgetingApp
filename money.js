@@ -21,92 +21,154 @@ Step 7: If we can purchase have a popup for a "Do you want to make this purchase
 Step 8: We need to have the budget increase and decrease from bills and paychecks(idea 1: checking date and if its a friday then we get paid)
 
 */
-let date = new Date()
-let day = date.getDay()
-console.log(day)
+    let date = new Date()
+    let day = date.getDay()
+    let cursorSwitch = 1;
 
-if(day == 0){
-    console.log(`It's Sunday!!`)
-}
+    let currentSavingsCursor = document.getElementById('currentSavings')
+    let currentPaycheckCursor = document.getElementById('currentPaycheck')
+    let currentBillsCursor = document.getElementById('bills')
+    let otherExpensesCursor = document.getElementById('otherExpenses')
+    let otherIncomeCursor = document.getElementById('otherIncomes')
+    let savingLimitCursor = document.getElementById('savingLimit')
 
-
-
-
-document.getElementById('btn').addEventListener('click', function(){
     let currentSavingsValue = parseInt(document.getElementById('currentSavings').value)
     let currentPaycheckValue = parseInt(document.getElementById('currentPaycheck').value)
     let currentBillsValue = parseInt(document.getElementById('bills').value)
     let otherExpensesValue = parseInt(document.getElementById('otherExpenses').value)
     let otherIncomeValue = parseInt(document.getElementById('otherIncomes').value)
     let savingLimitValue = parseInt(document.getElementById('savingLimit').value)
+
+    let cursorArray = [currentSavingsCursor, currentPaycheckCursor, currentBillsCursor, otherExpensesCursor, otherIncomeCursor, savingLimitCursor]
     let valuesArray = [currentSavingsValue, currentPaycheckValue, currentBillsValue, otherExpensesValue, otherIncomeValue]
+
+    let isAllValuesEntered
     let budget = currentSavingsValue - savingLimitValue
     let amount = currentSavingsValue + (currentPaycheckValue * 4)
     let amountIncome = amount + otherIncomeValue
     let amountDecrease = amountIncome - (currentBillsValue + otherExpensesValue)
-    let isAllValuesEntered
-
-  
-    valuesArray.forEach((item) => {
-        if(isNaN(item) == true){
-            isAllValuesEntered = false;
-        } else{isAllValuesEntered = true}
-        
-    })
-
-
-if(isAllValuesEntered == true){
-    if(day == 0){
-        valuesArray[0] += currentPaycheckValue
-        document.getElementById('values').innerHTML += `<h2>Today was payday and you got paid ${currentPaycheckValue}$</h2>`
+    let htmlCreated = 0;
+    
+    function updateValues(){
+        //updating the values so when we use them in functions they have the values
+        currentSavingsValue = parseInt(document.getElementById('currentSavings').value)
+        currentPaycheckValue = parseInt(document.getElementById('currentPaycheck').value)
+        currentBillsValue = parseInt(document.getElementById('bills').value)
+        otherExpensesValue = parseInt(document.getElementById('otherExpenses').value)
+        otherIncomeValue = parseInt(document.getElementById('otherIncomes').value)
+        savingLimitValue = parseInt(document.getElementById('savingLimit').value)
+        valuesArray = [currentSavingsValue, currentPaycheckValue, currentBillsValue, otherExpensesValue, otherIncomeValue]
+        budget = currentSavingsValue - savingLimitValue
     }
-    document.querySelector('#valuesError').remove()
-    document.getElementById('form').remove()
-        document.getElementById('values').innerHTML += 
-            `<table id='moneyTable'>
-            <tr><th>Current Savings</th> <th>Current Paycheck</th> <th>Current Bills</th> 
-            <th>Other Expenses</th> <th>Other Income</th> <th>Budget</th></tr>
-            <tr>
 
-            <td id="currentSavings">${valuesArray[0]}$</td>
-            <td>${valuesArray[1]}$</td>
-            <td>${valuesArray[2]}$</td>
-            <td>${valuesArray[3]}$</td>
-            <td>${valuesArray[4]}$</td>
-            <td id="currentBudget">${budget}$</td>
-
-            </tr>
-            </table>
+    function checkIfNaN(){
+        //looping through all of the values to make sure they have a value on them
+        valuesArray.forEach((item) => {
+            if(isNaN(item) == true){
+                isAllValuesEntered = false;
+            } else{isAllValuesEntered = true}
             
-            <p> At the end of the month you will have made ${amount}$ and your bills will cost ${valuesArray[2]} and other expenses cost ${valuesArray[3]}
-            You had ${valuesArray[0]} saved up with other incomes ${valuesArray[4]}. This means you have ${amountDecrease}$ left</p>
-            
-
-            <div>
-                <label for="Item Cost">Please enter in the price of the item you wish to purchase</label>
-                <input type="number" name="Item cost" id="itemCosts">
-                <button id="btnItem">Click</button>
-            </div>
-            `
+        })
+        console.log(isAllValuesEntered)
+    }
 
 
-        document.getElementById('btnItem').addEventListener('click', function(){
-            let itemCostValue = parseInt(document.getElementById('itemCosts').value)
-            let budgetAfterPurchase = currentSavingsValue - itemCostValue
-            if(budgetAfterPurchase>savingLimitValue ){
-                console.log('You can Purchase')
-                currentSavingsValue -= itemCostValue
-                document.getElementById('currentSavings').textContent = currentSavingsValue
-                budget -= itemCostValue
-                document.getElementById('currentBudget').textContent = budget
-            } else if(isNaN(budget)){
+function CreatingYourBudgetTable(){
+    let ifErrorCreated = false
+    updateValues()
+    checkIfNaN()
+
+    if(isAllValuesEntered == true){
+        if(day == 0){
+            valuesArray[0] += currentPaycheckValue
+            document.getElementById('values').innerHTML += `<h2>Today was payday and you got paid ${currentPaycheckValue}$</h2>`
+        }
+
+            if(date.getDate() + 1 == 1){
+            valuesArray[0] -= currentBillsValue
+            valuesArray[0] -= otherExpensesValue
+            valuesArray[0] += otherIncomeValue
+            }
+    
+                document.getElementById('form').remove()
+                    document.getElementById('values').innerHTML += 
+                        `<table id='moneyTable'>
+                        <tr><th>Current Savings</th> <th>Current Paycheck</th> <th>Current Bills</th> 
+                        <th>Other Expenses</th> <th>Other Income</th> <th>Budget</th></tr>
+                        <tr>
+
+                        <td id="currentSavings">${valuesArray[0]}$</td>
+                        <td>${valuesArray[1]}$</td>
+                        <td>${valuesArray[2]}$</td>
+                        <td>${valuesArray[3]}$</td>
+                        <td>${valuesArray[4]}$</td>
+                        <td id="currentBudget">${budget}$</td>
+
+                        </tr>
+                        </table>
+                        
+                        <p> At the end of the month you will have made ${amount}$ and your bills will cost ${valuesArray[2]} and other expenses cost ${valuesArray[3]}
+                        You had ${valuesArray[0]} saved up with other incomes ${valuesArray[4]}. This means you have ${amountDecrease}$ left</p>
+                        
+
+                        <div>
+                            <label for="Item Cost">Please enter in the price of the item you wish to purchase</label>
+                            <input type="number" name="Item cost" id="itemCosts">
+                            <button id="btnItem">Click</button>
+                        </div>
+                        `
+            htmlCreated += 1;
+
+    }
+        else if(isAllValuesEntered == false){
+            if(ifErrorCreated == false){
+                document.getElementById('form').innerHTML += `<p id='errorMessage'>Please enter in all values</p>`
+                ifErrorCreated = true
+                
+            }
+            document.getElementById('btn').addEventListener('click', CreatingYourBudgetTable)
+            document.addEventListener('keydown', function(e) {
+                checkIfNaN()
+                    if(e.key == 'Enter' && cursorSwitch == 6){
+                            CreatingYourBudgetTable()
+                    }
+                    if(e.key == 'Enter' && isAllValuesEntered == false){
+                            cursorArray[cursorSwitch].focus()
+                            cursorSwitch++ 
+                        }
+            })
+        } 
+        console.log('hello')     
+}
+
+document.getElementById('btn').addEventListener('click', CreatingYourBudgetTable)
+document.addEventListener('keydown', function(e) {
+    checkIfNaN()
+        if(e.key == 'Enter' && cursorSwitch == 6){
+                CreatingYourBudgetTable()
+        }
+        if(e.key == 'Enter' && isAllValuesEntered == false){
+                cursorArray[cursorSwitch].focus()
+                cursorSwitch++ 
+            }
+})
+
+if(htmlCreated == 1){
+document.getElementById('btnItem').addEventListener('click', function(){
+    let itemCostValue = parseInt(document.getElementById('itemCosts').value)
+    let budgetAfterPurchase = currentSavingsValue - itemCostValue
+        if(budgetAfterPurchase>savingLimitValue ){
+            console.log('You can Purchase')
+            currentSavingsValue -= itemCostValue
+            document.getElementById('currentSavings').textContent = currentSavingsValue
+            budget -= itemCostValue
+            document.getElementById('currentBudget').textContent = budget
+        } 
+            else if(isNaN(budget)){
                 console.log(`Enter in a budget`)
             }
-            else {
-                console.log('You cant purchase')
-            }
-    })
-} else{
-    
+                else {
+                    console.log('You cant purchase')
+                }
+    }) 
 }
-})
