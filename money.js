@@ -41,12 +41,12 @@ Step 2: Make it a prompt instead of a list of inputs
     let otherIncomeCursor = document.getElementById('otherIncomes')
     let savingLimitCursor = document.getElementById('savingLimit')
 
-    let currentSavingsValue = parseInt(document.getElementById('currentSavings').value)
-    let currentPaycheckValue = parseInt(document.getElementById('currentPaycheck').value)
-    let currentBillsValue = parseInt(document.getElementById('bills').value)
-    let otherExpensesValue = parseInt(document.getElementById('otherExpenses').value)
-    let otherIncomeValue = parseInt(document.getElementById('otherIncomes').value)
-    let savingLimitValue = parseInt(document.getElementById('savingLimit').value)
+    let currentSavingsValue 
+    let currentPaycheckValue 
+    let currentBillsValue 
+    let otherExpensesValue 
+    let otherIncomeValue 
+    let savingLimitValue 
 
     let cursorArray = [currentSavingsCursor, currentPaycheckCursor, currentBillsCursor, otherExpensesCursor, otherIncomeCursor, savingLimitCursor]
     let valuesArray = [currentSavingsValue, currentPaycheckValue, currentBillsValue, otherExpensesValue, otherIncomeValue]
@@ -58,19 +58,26 @@ Step 2: Make it a prompt instead of a list of inputs
     let amountIncome = amount + otherIncomeValue
     let amountDecrease = amountIncome - (currentBillsValue + otherExpensesValue)
     let htmlCreated = 0;
-    let whichInputTurn = 0;
+    let whichInputTurn = 1;
     
-    function updateValues(){
-        //updating the values so when we use them in functions they have the values
-        currentSavingsValue = parseInt(document.getElementById('currentSavings').value)
-        currentPaycheckValue = parseInt(document.getElementById('currentPaycheck').value)
-        currentBillsValue = parseInt(document.getElementById('bills').value)
-        otherExpensesValue = parseInt(document.getElementById('otherExpenses').value)
-        otherIncomeValue = parseInt(document.getElementById('otherIncomes').value)
-        savingLimitValue = parseInt(document.getElementById('savingLimit').value)
-        valuesArray = [currentSavingsValue, currentPaycheckValue, currentBillsValue, otherExpensesValue, otherIncomeValue]
-        budget = currentSavingsValue - savingLimitValue
-    }
+    function createInput(currentVar, idOne, idTwo, message, ){
+        inputTurn1.innerHTML += `
+        <label for="${idOne}">${message}</label>
+        <input type="number" name="${idOne}" id="${idTwo}" required>
+        `
+        return currentVar = parseInt(document.getElementById(idTwo).value)
+        }
+
+        let functionArray = []
+            functionArray.push([currentSavingsValue,'Current Savings','currentSavings','Enter in your Current Savings']);
+            functionArray.push([currentPaycheckValue, 'Current Paycheck','currentPaycheck', 'Enter in your current paycheck amount']);
+            functionArray.push([currentBillsValue,'Bills', 'bills','Please Enter in your monthly bills']);
+            functionArray.push([otherExpensesValue,'Other Expeneses', 'otherExpenses', 'Please enter in any Other Expeneses']);
+            functionArray.push([otherIncomeValue,'Other Incomes', 'otherIncomes', 'Please enter in any other incomes']);
+            functionArray.push([savingLimitValue,'Current Savings', 'savingLimit', 'How much money would you like to keep at all times']);
+            createInput(functionArray[0][0], functionArray[0][1], functionArray[0][2], functionArray[0][3])
+
+   
 
     function checkIfNaN(){
         //looping through all of the values to make sure they have a value on them
@@ -80,27 +87,24 @@ Step 2: Make it a prompt instead of a list of inputs
             } else{isAllValuesEntered = true}
             
         })
-        console.log(isAllValuesEntered)
     }
     
 
 function CreatingYourBudgetTable(){
-
-    function createInput(idOne, idTwo, message){
-        inputTurns[whichInputTurn].innerHTML += `
-        <label for="${idOne}">${message}</label>
-        <input type="number" name="${idOne}" id="${idTwo}" required>
-        `
-        }
-        let functionArray = [
-            createInput("Current Savings","currentSavings",'Enter in your Current Savings'),
-            createInput("Current Paycheck",'currentPaycheck', 'Enter in your current paycheck amount'),
-            createInput('Bills', 'bills','Please Enter in your monthly bills'),
-            createInput('Other Expeneses', 'otherExpenses', 'Please enter in any Other Expeneses'),
-            createInput('Other Incomes', 'otherIncomes', 'Please enter in any other incomes'),
-            createInput('Current Savings', 'savingLimit', 'How much money would you like to keep at all times')
+    console.log(whichInputTurn)
+    let updateValues = [
+        //updating the values so when we use them in functions they have the values
+        currentSavingsValue = parseInt(document.getElementById('currentSavings').value),
+        currentPaycheckValue = parseInt(document.getElementById('currentPaycheck').value),
+        currentBillsValue = parseInt(document.getElementById('bills').value),
+        otherExpensesValue = parseInt(document.getElementById('otherExpenses').value),
+        otherIncomeValue = parseInt(document.getElementById('otherIncomes').value),
+        savingLimitValue = parseInt(document.getElementById('savingLimit').value)
+        
     ]
-
+    while (inputTurn1.hasChildNodes()) {
+        inputTurn1.removeChild(inputTurn1.firstChild);
+      }
         if(day == 0){
             valuesArray[0] += currentPaycheckValue
             document.getElementById('values').innerHTML += `<h2>Today was payday and you got paid ${currentPaycheckValue}$</h2>`
@@ -115,17 +119,17 @@ function CreatingYourBudgetTable(){
                 }
 
             }
-            if(whichInputTurn <5){
-                updateValues()
-                if(isNaN(valuesArray[whichInputTurn]) == false)
-                inputTurns[whichInputTurn].style.visibility = 'hidden'
+            if(whichInputTurn < 5){
+                updateValues[whichInputTurn]
+                console.log(updateValues[whichInputTurn])
+                createInput(functionArray[whichInputTurn][0], functionArray[whichInputTurn][1], functionArray[whichInputTurn][2], functionArray[whichInputTurn][3])
+                
                 whichInputTurn++
-                console.log(whichInputTurn)
-                inputTurns[whichInputTurn].removeAttribute('hidden')
+                
             }
 
             else if(whichInputTurn == 5){
-                updateValues()
+                
                 document.getElementById('form').remove()
                     document.getElementById('values').innerHTML += 
                         `<table id='moneyTable'>
