@@ -34,13 +34,6 @@ Step 2: Make it a prompt instead of a list of inputs
     let inputTurn5 = document.getElementById('inputTurn5')
     let inputTurn6 = document.getElementById('inputTurn6')
 
-    let currentSavingsCursor = document.getElementById('currentSavings')
-    let currentPaycheckCursor = document.getElementById('currentPaycheck')
-    let currentBillsCursor = document.getElementById('bills')
-    let otherExpensesCursor = document.getElementById('otherExpenses')
-    let otherIncomeCursor = document.getElementById('otherIncomes')
-    let savingLimitCursor = document.getElementById('savingLimit')
-
     let currentSavingsValue 
     let currentPaycheckValue 
     let currentBillsValue 
@@ -48,10 +41,17 @@ Step 2: Make it a prompt instead of a list of inputs
     let otherIncomeValue 
     let savingLimitValue 
 
-    let cursorArray = [currentSavingsCursor, currentPaycheckCursor, currentBillsCursor, otherExpensesCursor, otherIncomeCursor, savingLimitCursor]
-    let valuesArray = [currentSavingsValue, currentPaycheckValue, currentBillsValue, otherExpensesValue, otherIncomeValue]
+    let valuesArray = []
     let inputTurns = [inputTurn1, inputTurn2, inputTurn3, inputTurn4, inputTurn5, inputTurn6]
-
+    let functionArray = []
+            functionArray.push(['Current Savings','currentSavings','Enter in your Current Savings']);
+            functionArray.push(['Current Paycheck','currentPaycheck', 'Enter in your current paycheck amount']);
+            functionArray.push(['Bills', 'bills','Please Enter in your monthly bills']);
+            functionArray.push(['Other Expeneses', 'otherExpenses', 'Please enter in any Other Expeneses']);
+            functionArray.push(['Other Incomes', 'otherIncomes', 'Please enter in any other incomes']);
+            functionArray.push(['Current Savings', 'savingLimit', 'How much money would you like to keep at all times']);
+            
+   
     let isAllValuesEntered
     let budget = currentSavingsValue - savingLimitValue
     let amount = currentSavingsValue + (currentPaycheckValue * 4)
@@ -60,26 +60,36 @@ Step 2: Make it a prompt instead of a list of inputs
     let htmlCreated = 0;
     let whichInputTurn = 1;
     
-    function createInput(currentVar, idOne, idTwo, message, ){
+    
+function checkingIfCanBuy(){
+        let itemCostValue = parseInt(document.getElementById('itemCosts').value)
+        let budgetAfterPurchase = currentSavingsValue - itemCostValue
+        if(budgetAfterPurchase>savingLimitValue ){
+            console.log('You can Purchase')
+            currentSavingsValue -= itemCostValue
+            document.getElementById('currentSavings').textContent = currentSavingsValue
+            budget -= itemCostValue
+            document.getElementById('currentBudget').textContent = budget
+        } 
+            else if(isNaN(budget)){
+                console.log(`Enter in a budget`)
+            }
+                else {
+                    console.log('You cant purchase')
+                }
+}
+
+function createInput( idOne, idTwo, message, ){
         inputTurn1.innerHTML += `
         <label for="${idOne}">${message}</label>
         <input type="number" name="${idOne}" id="${idTwo}" required>
         `
-        return currentVar = parseInt(document.getElementById(idTwo).value)
-        }
+        document.getElementById(`${idTwo}`).focus()
+}
 
-        let functionArray = []
-            functionArray.push([currentSavingsValue,'Current Savings','currentSavings','Enter in your Current Savings']);
-            functionArray.push([currentPaycheckValue, 'Current Paycheck','currentPaycheck', 'Enter in your current paycheck amount']);
-            functionArray.push([currentBillsValue,'Bills', 'bills','Please Enter in your monthly bills']);
-            functionArray.push([otherExpensesValue,'Other Expeneses', 'otherExpenses', 'Please enter in any Other Expeneses']);
-            functionArray.push([otherIncomeValue,'Other Incomes', 'otherIncomes', 'Please enter in any other incomes']);
-            functionArray.push([savingLimitValue,'Current Savings', 'savingLimit', 'How much money would you like to keep at all times']);
-            createInput(functionArray[0][0], functionArray[0][1], functionArray[0][2], functionArray[0][3])
+        
 
-   
-
-    function checkIfNaN(){
+function checkIfNaN(){
         //looping through all of the values to make sure they have a value on them
         valuesArray.forEach((item) => {
             if(isNaN(item) == true){
@@ -88,20 +98,24 @@ Step 2: Make it a prompt instead of a list of inputs
             
         })
     }
-    
+
+function addValues(value, id){
+    if(whichInputTurn == value){
+        valuesArray.push(parseInt(document.getElementById(`${id}`).value))
+        }
+}
 
 function CreatingYourBudgetTable(){
+    addValues(1, `currentSavings`)
+    addValues(2, `currentPaycheck`)
+    addValues(3, `bills`)
+    addValues(4, `otherExpenses`)
+    addValues(5, `otherIncomes`)
+    addValues(6, `savingLimit`)
+
+    console.log(valuesArray)
     console.log(whichInputTurn)
-    let updateValues = [
-        //updating the values so when we use them in functions they have the values
-        currentSavingsValue = parseInt(document.getElementById('currentSavings').value),
-        currentPaycheckValue = parseInt(document.getElementById('currentPaycheck').value),
-        currentBillsValue = parseInt(document.getElementById('bills').value),
-        otherExpensesValue = parseInt(document.getElementById('otherExpenses').value),
-        otherIncomeValue = parseInt(document.getElementById('otherIncomes').value),
-        savingLimitValue = parseInt(document.getElementById('savingLimit').value)
-        
-    ]
+ 
     while (inputTurn1.hasChildNodes()) {
         inputTurn1.removeChild(inputTurn1.firstChild);
       }
@@ -119,18 +133,23 @@ function CreatingYourBudgetTable(){
                 }
 
             }
-            if(whichInputTurn < 5){
-                updateValues[whichInputTurn]
-                console.log(updateValues[whichInputTurn])
-                createInput(functionArray[whichInputTurn][0], functionArray[whichInputTurn][1], functionArray[whichInputTurn][2], functionArray[whichInputTurn][3])
-                
+            if(whichInputTurn < 6){
+                createInput(functionArray[whichInputTurn][0], functionArray[whichInputTurn][1], functionArray[whichInputTurn][2])
                 whichInputTurn++
                 
             }
 
-            else if(whichInputTurn == 5){
-                
+            else if(whichInputTurn == 6){
                 document.getElementById('form').remove()
+                currentSavingsValue = valuesArray[0]
+                currentPaycheckValue = valuesArray[1]
+                currentBillsValue = valuesArray[2]
+                otherExpensesValue = valuesArray[3]
+                otherIncomeValue = valuesArray[4]
+                savingLimitValue = valuesArray[5]
+                let budget = valuesArray[0] - valuesArray[5]
+
+
                     document.getElementById('values').innerHTML += 
                         `<table id='moneyTable'>
                         <tr><th>Current Savings</th> <th>Current Paycheck</th> <th>Current Bills</th> 
@@ -146,10 +165,6 @@ function CreatingYourBudgetTable(){
 
                         </tr>
                         </table>
-                        
-                        <p> At the end of the month you will have made ${amount}$ and your bills will cost ${valuesArray[2]} and other expenses cost ${valuesArray[3]}
-                        You had ${valuesArray[0]} saved up with other incomes ${valuesArray[4]}. This means you have ${amountDecrease}$ left</p>
-                        
 
                         <div>
                             <label for="Item Cost">Please enter in the price of the item you wish to purchase</label>
@@ -157,59 +172,20 @@ function CreatingYourBudgetTable(){
                             <button id="btnItem">Click</button>
                         </div>
                         `
-            htmlCreated += 1;
+                       
+        
 
-        if(isAllValuesEntered == false){
-
-            if(ifErrorCreated == false){
-                document.getElementById('form').innerHTML += `<p id='errorMessage'>Please enter in all values</p>`
-                ifErrorCreated = true
-                
-            }
-            document.getElementById('btn').addEventListener('click', CreatingYourBudgetTable)
-            document.addEventListener('keydown', function(e) {
-                checkIfNaN()
-                    if(e.key == 'Enter' && cursorSwitch == 6){
-                            CreatingYourBudgetTable()
-                    }
-                    if(e.key == 'Enter' && isAllValuesEntered == false){
-                            cursorArray[cursorSwitch].focus()
-                            cursorSwitch++ 
-                        }
-            })
-        } 
-        console.log('hello')
-    }     
+                document.getElementById('btnItem').addEventListener('click', checkingIfCanBuy)
+    }
 }
+
 
 document.getElementById('btn').addEventListener('click', CreatingYourBudgetTable)
-document.addEventListener('keydown', function(e) {
-    checkIfNaN()
-        if(e.key == 'Enter' && cursorSwitch == 6){
+document.getElementById('form').addEventListener('keydown', function(e) {
+    if(htmlCreated == 0){
+        if(e.key == 'Enter'){
                 CreatingYourBudgetTable()
         }
-        if(e.key == 'Enter' && isAllValuesEntered == false){
-                cursorArray[cursorSwitch].focus()
-                cursorSwitch++ 
-            }
+    }
 })
 
-if(htmlCreated == 1){
-document.getElementById('btnItem').addEventListener('click', function(){
-    let itemCostValue = parseInt(document.getElementById('itemCosts').value)
-    let budgetAfterPurchase = currentSavingsValue - itemCostValue
-        if(budgetAfterPurchase>savingLimitValue ){
-            console.log('You can Purchase')
-            currentSavingsValue -= itemCostValue
-            document.getElementById('currentSavings').textContent = currentSavingsValue
-            budget -= itemCostValue
-            document.getElementById('currentBudget').textContent = budget
-        } 
-            else if(isNaN(budget)){
-                console.log(`Enter in a budget`)
-            }
-                else {
-                    console.log('You cant purchase')
-                }
-    }) 
-}
