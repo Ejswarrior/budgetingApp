@@ -24,15 +24,17 @@ Step 1: Learn to store data so we only have to enter it once
 Step 2: Make it a prompt instead of a list of inputs
 */
     let date = new Date()
+    console.log(date)
     let day = date.getDay()
+    let dayOfMonth = date.getDate()
+    let month = date.getMonth() + 1
+    let year = date.getFullYear()
+    const dateCheck =`${year}-${month}-${dayOfMonth}`
+    console.log(dateCheck)
+
     let cursorSwitch = 1;
 
     let inputTurn1 = document.getElementById('inputTurn1')
-    let inputTurn2 = document.getElementById('inputTurn2')
-    let inputTurn3 = document.getElementById('inputTurn3')
-    let inputTurn4 = document.getElementById('inputTurn4')
-    let inputTurn5 = document.getElementById('inputTurn5')
-    let inputTurn6 = document.getElementById('inputTurn6')
 
     let currentSavingsValue 
     let currentPaycheckValue 
@@ -40,36 +42,40 @@ Step 2: Make it a prompt instead of a list of inputs
     let otherExpensesValue 
     let otherIncomeValue 
     let savingLimitValue 
+    let dateInput
 
+    let billsArray = []
     let valuesArray = []
-    let inputTurns = [inputTurn1, inputTurn2, inputTurn3, inputTurn4, inputTurn5, inputTurn6]
     let functionArray = []
             functionArray.push(['Current Savings','currentSavings','Enter in your Current Savings']);
             functionArray.push(['Current Paycheck','currentPaycheck', 'Enter in your current paycheck amount']);
-            functionArray.push(['Bills', 'bills','Please Enter in your monthly bills']);
-            functionArray.push(['Other Expeneses', 'otherExpenses', 'Please enter in any Other Expeneses']);
             functionArray.push(['Other Incomes', 'otherIncomes', 'Please enter in any other incomes']);
             functionArray.push(['Current Savings', 'savingLimit', 'How much money would you like to keep at all times']);
-            
-   
+    let functionArrayCreateDate = []
+        functionArrayCreateDate.push(['Bills', 'bills','Please Enter in your monthly bills']);
+        functionArrayCreateDate.push(['Other Expeneses', 'otherExpenses', 'Please enter in any Other Expeneses']);
+
+    let purchases = 0 
     let isAllValuesEntered
-    let budget = currentSavingsValue - savingLimitValue
-    let amount = currentSavingsValue + (currentPaycheckValue * 4)
-    let amountIncome = amount + otherIncomeValue
-    let amountDecrease = amountIncome - (currentBillsValue + otherExpensesValue)
+    let budget
+    let billsTotal
     let htmlCreated = 0;
     let whichInputTurn = 1;
     
     
 function checkingIfCanBuy(){
+        
+        purchases++
         let itemCostValue = parseInt(document.getElementById('itemCosts').value)
         let budgetAfterPurchase = currentSavingsValue - itemCostValue
         if(budgetAfterPurchase>savingLimitValue ){
             console.log('You can Purchase')
             currentSavingsValue -= itemCostValue
-            document.getElementById('currentSavings').textContent = currentSavingsValue
+            document.getElementById('currentSavingsTd').textContent = currentSavingsValue
             budget -= itemCostValue
+            console.log(budget)
             document.getElementById('currentBudget').textContent = budget
+            document.getElementById('values').innerHTML += `<h3>Purchase ${purchases}:</h3> <p>Amount: ${itemCostValue}$ | Date: ${day} | Savings: ${currentSavingsValue}$ | Budget: ${budget}$</p>`
         } 
             else if(isNaN(budget)){
                 console.log(`Enter in a budget`)
@@ -79,14 +85,40 @@ function checkingIfCanBuy(){
                 }
 }
 
-function createInput( idOne, idTwo, message, ){
+function createInput( idOne, idTwo, message){
+        if(whichInputTurn != 2 || whichInputTurn != 3){
         inputTurn1.innerHTML += `
         <label for="${idOne}">${message}</label>
         <input type="number" name="${idOne}" id="${idTwo}" required>
         `
         document.getElementById(`${idTwo}`).focus()
+        }
+}
+createInputDates = (idOne, idTwo, idThree, message) =>{
+    if(whichInputTurn ==3 || whichInputTurn ==2){
+        inputTurn1.innerHTML += `
+        <label for="${idOne}">Enter the cost of your bill</label>
+        <input type="number" name="${idOne}" id="${idTwo}" required>
+        
+        <label for="${idOne}">Enter the Due Date</label>
+        <input type="date" name="${idOne}" id="${idThree}" required>
+
+        <button id="btnItem">Add another bill</button>
+        `
+        document.getElementById(`${idTwo}`).focus()
+    }
+    addBillButton = () =>{
+        billsArray.push(document.getElementById(`${idThree}`))
+        createInputDates()
+    
+    }
 }
 
+addBillButton = () =>{
+
+    createInputDates()
+
+}
         
 
 function checkIfNaN(){
@@ -106,40 +138,32 @@ function addValues(value, id){
 }
 
 function CreatingYourBudgetTable(){
+
     addValues(1, `currentSavings`)
     addValues(2, `currentPaycheck`)
     addValues(3, `bills`)
     addValues(4, `otherExpenses`)
     addValues(5, `otherIncomes`)
     addValues(6, `savingLimit`)
-
-    console.log(valuesArray)
-    console.log(whichInputTurn)
  
     while (inputTurn1.hasChildNodes()) {
         inputTurn1.removeChild(inputTurn1.firstChild);
       }
-        if(day == 0){
-            valuesArray[0] += currentPaycheckValue
-            document.getElementById('values').innerHTML += `<h2>Today was payday and you got paid ${currentPaycheckValue}$</h2>`
-        }
 
-            if(date.getDate() + 1 == 1){
-            valuesArray[0] -= currentBillsValue
-            valuesArray[0] -= otherExpensesValue
-            valuesArray[0] += otherIncomeValue
-                if(date.getDate() > 24 && date.getDate() < 31){
-                    console.log(`You have an upcoming bills to be paid`)
-                }
-
-            }
-            if(whichInputTurn < 6){
+            
+            if(whichInputTurn < 6 && whichInputTurn != 2 && whichInputTurn != 3){
                 createInput(functionArray[whichInputTurn][0], functionArray[whichInputTurn][1], functionArray[whichInputTurn][2])
                 whichInputTurn++
                 
             }
+            else if(whichInputTurn == 2 || whichInputTurn == 3){
+                createInputDates()
+
+
+            }
 
             else if(whichInputTurn == 6){
+
                 document.getElementById('form').remove()
                 currentSavingsValue = valuesArray[0]
                 currentPaycheckValue = valuesArray[1]
@@ -147,8 +171,21 @@ function CreatingYourBudgetTable(){
                 otherExpensesValue = valuesArray[3]
                 otherIncomeValue = valuesArray[4]
                 savingLimitValue = valuesArray[5]
-                let budget = valuesArray[0] - valuesArray[5]
+                budget = valuesArray[0] - valuesArray[5]
+                endOfMonthTotal = (currentBillsValue + otherExpensesValue) - otherIncomeValue
+                console.log(endOfMonthTotal)
+                console.log(date.getDate())
+            if(day == 0){
+                valuesArray[0] += currentPaycheckValue
+                alert(`Today was payday and you got paid ${currentPaycheckValue}$`)
+            }
 
+            if(date.getDate() + 1 == 1){
+                currentSavingsValue -= endOfMonthTotal
+                    if(date.getDate() >= 24 && date.getDate() <= 31){
+                        alert(`You have an upcoming bills to be paid`)
+                    }
+            }
 
                     document.getElementById('values').innerHTML += 
                         `<table id='moneyTable'>
@@ -156,7 +193,7 @@ function CreatingYourBudgetTable(){
                         <th>Other Expenses</th> <th>Other Income</th> <th>Budget</th></tr>
                         <tr>
 
-                        <td id="currentSavings">${valuesArray[0]}$</td>
+                        <td id="currentSavingsTd">${valuesArray[0]}$</td>
                         <td>${valuesArray[1]}$</td>
                         <td>${valuesArray[2]}$</td>
                         <td>${valuesArray[3]}$</td>
@@ -172,11 +209,14 @@ function CreatingYourBudgetTable(){
                             <button id="btnItem">Click</button>
                         </div>
                         `
-                       
-        
 
                 document.getElementById('btnItem').addEventListener('click', checkingIfCanBuy)
-    }
+                document.getElementById('values').addEventListener('keydown', function(e){
+                    if(e.key == 'Enter'){
+                        checkingIfCanBuy()
+                    }
+                })
+    }           
 }
 
 
