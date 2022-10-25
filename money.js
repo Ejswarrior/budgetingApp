@@ -30,7 +30,6 @@ Step 2: Make it a prompt instead of a list of inputs
     let month = date.getMonth() + 1
     let year = date.getFullYear()
     const dateCheck =`${year}-${month}-${dayOfMonth}`
-    console.log(dateCheck)
 
     let cursorSwitch = 1;
 
@@ -52,8 +51,8 @@ Step 2: Make it a prompt instead of a list of inputs
             functionArray.push(['Other Incomes', 'otherIncomes', 'Please enter in any other incomes']);
             functionArray.push(['Current Savings', 'savingLimit', 'How much money would you like to keep at all times']);
     let functionArrayCreateDate = []
-        functionArrayCreateDate.push(['Bills', 'bills','Please Enter in your monthly bills']);
-        functionArrayCreateDate.push(['Other Expeneses', 'otherExpenses', 'Please enter in any Other Expeneses']);
+        functionArrayCreateDate.push(['Bills', 'bills','billsDate','Please Enter in your monthly bills']);
+        functionArrayCreateDate.push(['Other Expeneses', 'otherExpenses', 'othersDate', 'Please enter in any Other Expeneses']);
 
     let purchases = 0 
     let isAllValuesEntered
@@ -61,6 +60,7 @@ Step 2: Make it a prompt instead of a list of inputs
     let billsTotal
     let htmlCreated = 0;
     let whichInputTurn = 1;
+    let whichTurn =1;
     
     
 function checkingIfCanBuy(){
@@ -97,7 +97,7 @@ function createInput( idOne, idTwo, message){
 createInputDates = (idOne, idTwo, idThree, message) =>{
     if(whichInputTurn ==3 || whichInputTurn ==2){
         inputTurn1.innerHTML += `
-        <label for="${idOne}">Enter the cost of your bill</label>
+        <label for="${idOne}">${message}</label>
         <input type="number" name="${idOne}" id="${idTwo}" required>
         
         <label for="${idOne}">Enter the Due Date</label>
@@ -108,16 +108,18 @@ createInputDates = (idOne, idTwo, idThree, message) =>{
         document.getElementById(`${idTwo}`).focus()
     }
     addBillButton = () =>{
-        billsArray.push(document.getElementById(`${idThree}`))
-        createInputDates()
-    
+        billsArray.push(document.getElementById(`${idTwo}`).value)
+        billsArray.push(document.getElementById(`${idThree}`).value)
+        while (inputTurn1.hasChildNodes()) {
+            inputTurn1.removeChild(inputTurn1.firstChild);
+          }
+          if(whichInputTurn == 2){
+            createInputDates(functionArrayCreateDate[0][0],functionArrayCreateDate[0][1],functionArrayCreateDate[0][2], functionArrayCreateDate[0][3])
+          } else {
+            createInputDates(functionArrayCreateDate[1][0],functionArrayCreateDate[1][1],functionArrayCreateDate[1][2], functionArrayCreateDate[1][3])
+          }
+          
     }
-}
-
-addBillButton = () =>{
-
-    createInputDates()
-
 }
         
 
@@ -136,6 +138,11 @@ function addValues(value, id){
         valuesArray.push(parseInt(document.getElementById(`${id}`).value))
         }
 }
+function addBillsValue(value, id){
+    if(whichInputTurn == value){
+        billsArray.push(document.getElementById(`${id}`).value)
+        }
+}
 
 function CreatingYourBudgetTable(){
 
@@ -145,6 +152,10 @@ function CreatingYourBudgetTable(){
     addValues(4, `otherExpenses`)
     addValues(5, `otherIncomes`)
     addValues(6, `savingLimit`)
+    addBillsValue(3, 'billsDate')
+    addBillsValue(4, 'othersDate')
+    
+
  
     while (inputTurn1.hasChildNodes()) {
         inputTurn1.removeChild(inputTurn1.firstChild);
@@ -152,14 +163,23 @@ function CreatingYourBudgetTable(){
 
             
             if(whichInputTurn < 6 && whichInputTurn != 2 && whichInputTurn != 3){
-                createInput(functionArray[whichInputTurn][0], functionArray[whichInputTurn][1], functionArray[whichInputTurn][2])
+                createInput(functionArray[whichTurn][0], functionArray[whichTurn][1], functionArray[whichTurn][2])
                 whichInputTurn++
+                whichTurn++
                 
             }
-            else if(whichInputTurn == 2 || whichInputTurn == 3){
-                createInputDates()
+            else if(whichInputTurn == 2){
+                createInputDates(functionArrayCreateDate[0][0],functionArrayCreateDate[0][1],functionArrayCreateDate[0][2], functionArrayCreateDate[0][3])
+                whichInputTurn++
+                
+               
+                
+            }
 
-
+            else if(whichInputTurn == 3){
+                createInputDates(functionArrayCreateDate[1][0],functionArrayCreateDate[1][1],functionArrayCreateDate[1][2], functionArrayCreateDate[1][3])
+                whichInputTurn++
+                
             }
 
             else if(whichInputTurn == 6){
@@ -173,8 +193,9 @@ function CreatingYourBudgetTable(){
                 savingLimitValue = valuesArray[5]
                 budget = valuesArray[0] - valuesArray[5]
                 endOfMonthTotal = (currentBillsValue + otherExpensesValue) - otherIncomeValue
-                console.log(endOfMonthTotal)
+                console.log(billsArray)
                 console.log(date.getDate())
+
             if(day == 0){
                 valuesArray[0] += currentPaycheckValue
                 alert(`Today was payday and you got paid ${currentPaycheckValue}$`)
@@ -199,6 +220,10 @@ function CreatingYourBudgetTable(){
                         <td>${valuesArray[3]}$</td>
                         <td>${valuesArray[4]}$</td>
                         <td id="currentBudget">${budget}$</td>
+
+                        ${billsArray.forEach((item) =>{
+                            document.getElementById('values').innerHTML += `<td>${item}$</td>`
+                        })}
 
                         </tr>
                         </table>
@@ -228,4 +253,5 @@ document.getElementById('form').addEventListener('keydown', function(e) {
         }
     }
 })
+
 
